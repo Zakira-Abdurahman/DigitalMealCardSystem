@@ -41,11 +41,24 @@ public class StudentsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Student>> PostStudent(Student student)
     {
-        _context.Students.Add(student);
-        await _context.SaveChangesAsync();
+        try
+        {
+            if (student == null)
+            {
+                return BadRequest("Student is null.");
+            }
 
-        return CreatedAtAction(nameof(GetStudent), new { id = student.StudentID }, student);
+            _context.Students.Add(student);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetStudent), new { id = student.StudentID }, student);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception (e.g., using a logging framework)
+            return StatusCode(500, "Internal server error: " + ex.Message);
+        }
     }
+
 
     // PUT: api/Students/5
     [HttpPut("{id}")]
