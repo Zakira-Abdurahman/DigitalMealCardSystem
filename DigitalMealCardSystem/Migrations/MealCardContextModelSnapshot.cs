@@ -40,14 +40,14 @@ namespace DigitalMealCardSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StudentID")
+                    b.Property<int>("TransactionID")
                         .HasColumnType("int");
 
                     b.HasKey("PaymentID");
 
-                    b.HasIndex("StudentID");
+                    b.HasIndex("TransactionID");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("Meal", b =>
@@ -58,12 +58,22 @@ namespace DigitalMealCardSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MealID"));
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("MealDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("MealType")
+                    b.Property<int>("MealType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Price")
+                        .HasColumnType("float");
 
                     b.HasKey("MealID");
 
@@ -107,6 +117,10 @@ namespace DigitalMealCardSystem.Migrations
                     b.Property<bool>("TemporaryResultIssued")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UniversityId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("StudentID");
 
                     b.ToTable("Students");
@@ -140,25 +154,25 @@ namespace DigitalMealCardSystem.Migrations
 
             modelBuilder.Entity("DigitalMealCardSystem.Models.Payment", b =>
                 {
-                    b.HasOne("Student", "Student")
-                        .WithMany("Payments")
-                        .HasForeignKey("StudentID")
+                    b.HasOne("Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("Transaction", b =>
                 {
                     b.HasOne("Meal", "Meal")
-                        .WithMany("Transactions")
+                        .WithMany()
                         .HasForeignKey("MealID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Student", "Student")
-                        .WithMany("Transactions")
+                        .WithMany()
                         .HasForeignKey("StudentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -166,18 +180,6 @@ namespace DigitalMealCardSystem.Migrations
                     b.Navigation("Meal");
 
                     b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("Meal", b =>
-                {
-                    b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("Student", b =>
-                {
-                    b.Navigation("Payments");
-
-                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

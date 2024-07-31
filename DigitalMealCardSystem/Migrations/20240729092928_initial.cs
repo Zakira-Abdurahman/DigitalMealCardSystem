@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DigitalMealCardSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,8 +17,11 @@ namespace DigitalMealCardSystem.Migrations
                 {
                     MealID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MealType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MealDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    MealType = table.Column<int>(type: "int", nullable: false),
+                    MealDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -32,6 +35,7 @@ namespace DigitalMealCardSystem.Migrations
                     StudentID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UniversityId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CafeteriaStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -43,28 +47,6 @@ namespace DigitalMealCardSystem.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Students", x => x.StudentID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Payments",
-                columns: table => new
-                {
-                    PaymentID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StudentID = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payments", x => x.PaymentID);
-                    table.ForeignKey(
-                        name: "FK_Payments_Students_StudentID",
-                        column: x => x.StudentID,
-                        principalTable: "Students",
-                        principalColumn: "StudentID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,10 +76,32 @@ namespace DigitalMealCardSystem.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Payment",
+                columns: table => new
+                {
+                    PaymentID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionID = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payment", x => x.PaymentID);
+                    table.ForeignKey(
+                        name: "FK_Payment_Transactions_TransactionID",
+                        column: x => x.TransactionID,
+                        principalTable: "Transactions",
+                        principalColumn: "TransactionID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_StudentID",
-                table: "Payments",
-                column: "StudentID");
+                name: "IX_Payment_TransactionID",
+                table: "Payment",
+                column: "TransactionID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_MealID",
@@ -114,7 +118,7 @@ namespace DigitalMealCardSystem.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Payments");
+                name: "Payment");
 
             migrationBuilder.DropTable(
                 name: "Transactions");
